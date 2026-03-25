@@ -24,7 +24,7 @@ export default async function handler(req, res) {
           description: item.description?.slice(0, 200),
           images: item.image ? [item.image] : [],
         },
-        unit_amount: item.price, // price in COP (no decimals needed)
+        unit_amount: item.price * 100, // price in COP (no decimals needed)
       },
       quantity: item.quantity,
     }));
