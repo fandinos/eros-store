@@ -27,8 +27,16 @@ export default async function handler(req, res) {
         unit_amount: item.price * 100, // price in COP (no decimals needed)
       },
       quantity: item.quantity,
+      tax_rates: [taxRate.id]
     }));
  
+    const taxRate = await stripe.taxRates.create({
+      display_name: 'IVA',
+      percentage: 19,
+      inclusive: true, // means price already INCLUDES IVA, just shows it
+      country: 'CO',
+    });
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: lineItems,
