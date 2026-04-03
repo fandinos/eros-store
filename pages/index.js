@@ -102,7 +102,7 @@ export default function Home() {
                 fontSize: '0.72rem', letterSpacing: '0.35em', textTransform: 'uppercase',
                 color: '#c8385a', marginBottom: '1.5rem', fontWeight: 600,
               }}>
-                — Tienda Íntima Premium
+                — Sexual Boutique —
               </p>
               <h1 style={{
                 fontFamily: "'Cormorant Garamond', serif",

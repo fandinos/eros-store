@@ -54,9 +54,9 @@ export default function Footer() {
             <div style={{ ...payBadge, background: '#FFB300', borderRadius: 4, padding: '3px 8px' }}>
               <span style={{ color: '#333', fontWeight: 700, fontSize: '0.75rem' }}>Efecty</span>
             </div>
-            {/* Stripe */}
-            <div style={{ ...payBadge, background: '#635BFF', borderRadius: 4, padding: '3px 8px' }}>
-              <span style={{ color: 'white', fontWeight: 700, fontSize: '0.75rem' }}>Stripe</span>
+            {/* Wompi */}
+            <div style={{ ...payBadge, background: '#FF5A5F', borderRadius: 4, padding: '3px 8px' }}>
+              <span style={{ color: 'white', fontWeight: 700, fontSize: '0.75rem' }}>Wompi</span>
             </div>
           </div>
           <p style={{ fontSize: '0.68rem', color: '#555566', marginTop: '0.75rem' }}>
@@ -76,8 +76,7 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <div style={{ marginBottom: '1rem' }}>
-              <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.5rem', fontWeight: 300, letterSpacing: '0.2em' }}>EROS</span>
-              <div style={{ fontSize: '0.55rem', letterSpacing: '0.3em', color: '#c8385a', fontWeight: 600, textTransform: 'uppercase' }}>Tienda Íntima</div>
+              <img src="/logo.png" alt="All Yours" style={{ height: 48, width: 'auto', objectFit: 'contain' }} />
             </div>
             <p style={{ color: '#555566', fontSize: '0.82rem', lineHeight: 1.7 }}>
               Tu tienda íntima de confianza. Discreción total, envíos rápidos en toda Colombia.
@@ -133,7 +132,7 @@ export default function Footer() {
           flexWrap: 'wrap', gap: '0.5rem',
         }}>
           <p style={{ color: '#444455', fontSize: '0.78rem' }}>
-            © {new Date().getFullYear()} Eros Tienda Íntima · Solo para mayores de 18 años.
+            © {new Date().getFullYear()} All Yours Sexual Boutique · Solo para mayores de 18 años.
           </p>
           <p style={{ color: '#444455', fontSize: '0.78rem' }}>
             Política de Privacidad · Términos de Uso

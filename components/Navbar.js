@@ -46,9 +46,8 @@ export default function Navbar() {
           padding: '0.9rem 1.25rem', maxWidth: 1240, margin: '0 auto',
         }}>
           {/* Logo */}
-          <Link href="/" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-            <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.5rem', fontWeight: 300, letterSpacing: '0.2em', color: '#f5f0ee', lineHeight: 1 }}>EROS</span>
-            <span style={{ fontSize: '0.5rem', letterSpacing: '0.3em', color: '#c8385a', fontWeight: 600, textTransform: 'uppercase' }}>Tienda Íntima</span>
+          <Link href="/">
+            <img src="/logo.png" alt="All Yours" style={{ height: 52, width: 'auto', objectFit: 'contain' }} />
           </Link>
  
           {/* Desktop Nav */}
