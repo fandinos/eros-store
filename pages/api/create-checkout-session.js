@@ -1,86 +1,43 @@
 // pages/api/create-checkout-session.js
-import Stripe from 'stripe';
- 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
- 
+import crypto from 'crypto';
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
- 
+
   const { items } = req.body;
   if (!items || items.length === 0) {
     return res.status(400).json({ error: 'No items provided' });
   }
- 
-  try {
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
- 
-    const lineItems = items.map(item => ({
-      price_data: {
-        currency: 'cop',  // Colombian Peso
-        product_data: {
-          name: item.name,
-          description: item.description?.slice(0, 200),
-          images: item.image ? [item.image] : [],
-        },
-        unit_amount: item.price * 100, // price in COP (no decimals needed)
-      },
-      quantity: item.quantity,
-      tax_rates: [taxRate.id]
-    }));
- 
-    const taxRate = await stripe.taxRates.create({
-      display_name: 'IVA',
-      percentage: 19,
-      inclusive: true, // means price already INCLUDES IVA, just shows it
-      country: 'CO',
-    });
 
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: lineItems,
-      mode: 'payment',
-      phone_number_collection: { enabled: false },
-      billing_address_collection: 'auto',
-      shipping_address_collection: {
-        allowed_countries: ['CO'], // Colombia only
-      },
-      shipping_options: [
-        {
-          shipping_rate_data: {
-            type: 'fixed_amount',
-            fixed_amount: { amount: 0, currency: 'cop' },
-            display_name: 'Envío Estándar',
-            delivery_estimate: {
-              minimum: { unit: 'business_day', value: 3 },
-              maximum: { unit: 'business_day', value: 5 },
-            },
-          },
-        },
-        {
-          shipping_rate_data: {
-            type: 'fixed_amount',
-            fixed_amount: { amount: 1500000, currency: 'cop' }, // $15.000 COP express
-            display_name: 'Envío Express 24–48h',
-            delivery_estimate: {
-              minimum: { unit: 'business_day', value: 1 },
-              maximum: { unit: 'business_day', value: 2 },
-            },
-          },
-        },
-      ],
-      locale: 'es',  // Spanish checkout page
-      success_url: `${siteUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${siteUrl}/checkout`,
-      metadata: {
-        order_items: JSON.stringify(items.map(i => ({ id: i.id, qty: i.quantity }))),
-      },
-    });
- 
-    res.status(200).json({ sessionId: session.id });
-  } catch (error) {
-    console.error('Stripe error:', error);
-    res.status(500).json({ error: error.message });
-  }
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+  const publicKey = process.env.WOMPI_PUBLIC_KEY;
+  const privateKey = process.env.WOMPI_PRIVATE_KEY;
+
+  // Calculate total in centavos (Wompi uses centavos of COP)
+  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const shipping = subtotal >= 150000 ? 0 : 15000;
+  const totalCOP = subtotal + shipping;
+  const amountInCentavos = totalCOP * 100; // Wompi needs centavos
+
+  // Generate unique reference
+  const reference = `EROS-${Date.now()}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`;
+
+  // Generate integrity signature
+  // Format: reference + amountInCentavos + currency + privateKey
+  const signatureString = `${reference}${amountInCentavos}COP${privateKey}`;
+  const signature = crypto
+    .createHash('sha256')
+    .update(signatureString)
+    .digest('hex');
+
+  res.status(200).json({
+    publicKey,
+    amountInCentavos,
+    reference,
+    signature,
+    redirectUrl: `${siteUrl}/success`,
+    currency: 'COP',
+  });
 }
