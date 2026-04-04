@@ -13,20 +13,21 @@ export default async function handler(req, res) {
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
   const publicKey = process.env.WOMPI_PUBLIC_KEY;
-  const privateKey = process.env.WOMPI_PRIVATE_KEY;
+  const integritySecret = process.env.WOMPI_INTEGRITY_SECRET; // different from private key!
 
-  // Calculate total in centavos (Wompi uses centavos of COP)
+  // Calculate total
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const shipping = subtotal >= 150000 ? 0 : 15000;
   const totalCOP = subtotal + shipping;
-  const amountInCentavos = totalCOP * 100; // Wompi needs centavos
+  const amountInCentavos = totalCOP * 100;
 
-  // Generate unique reference
-  const reference = `EROS-${Date.now()}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`;
+  // Unique reference
+  const reference = `ALLYOURS-${Date.now()}`;
+  const currency = 'COP';
 
-  // Generate integrity signature
-  // Format: reference + amountInCentavos + currency + privateKey
-  const signatureString = `${reference}${amountInCentavos}COP${privateKey}`;
+  // Wompi signature format: reference + amountInCentavos + currency + integritySecret
+  // Then SHA256 hash of that string
+  const signatureString = `${reference}${amountInCentavos}${currency}${integritySecret}`;
   const signature = crypto
     .createHash('sha256')
     .update(signatureString)
@@ -38,6 +39,6 @@ export default async function handler(req, res) {
     reference,
     signature,
     redirectUrl: `${siteUrl}/success`,
-    currency: 'COP',
+    currency,
   });
 }
