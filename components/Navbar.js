@@ -34,7 +34,7 @@ export default function Navbar() {
         {/* Top bar */}
         <div style={{
           background: '#c8385a', textAlign: 'center',
-          padding: '0.4rem 1rem', fontSize: '0.68rem',
+          padding: '0.4rem 1rem', fontSize: '0.95rem',
           fontWeight: 600, letterSpacing: '0.08em',
           textTransform: 'uppercase', color: 'white',
         }}>
@@ -43,17 +43,17 @@ export default function Navbar() {
  
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '0.9rem 1.25rem', maxWidth: 1240, margin: '0 auto',
+          padding: '0.4rem 1.25rem', maxWidth: 1240, margin: '0 auto',
         }}>
           {/* Logo */}
           <Link href="/">
-            <img src="/logo.png" alt="All Yours" style={{ height: 52, width: 'auto', objectFit: 'contain' }} />
+            <img src="/logo.png" alt="All Yours" style={{ height: 110, width: 'auto', objectFit: 'contain' }} />
           </Link>
  
           {/* Desktop Nav */}
           <div className="desktop-nav" style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
             {navLinks.map(link => (
-              <Link key={link.label} href={link.href} style={{ fontSize: '0.72rem', fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#888899', transition: 'color 0.2s' }}
+              <Link key={link.label} href={link.href} style={{ fontSize: '0.95rem', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#888899', transition: 'color 0.2s' }}
                 onMouseEnter={e => e.target.style.color = '#f5f0ee'}
                 onMouseLeave={e => e.target.style.color = '#888899'}
               >{link.label}</Link>
@@ -66,12 +66,12 @@ export default function Navbar() {
               background: 'transparent', border: '1px solid #2a2a3a', borderRadius: 6,
               color: '#f5f0ee', padding: '0.5rem 0.85rem',
               display: 'flex', alignItems: 'center', gap: '0.4rem',
-              fontSize: '0.75rem', fontWeight: 500, cursor: 'pointer', transition: 'border-color 0.2s',
+              fontSize: '1rem', fontWeight: 500, cursor: 'pointer', transition: 'border-color 0.2s',
             }}
               onMouseEnter={e => e.currentTarget.style.borderColor = '#c8385a'}
               onMouseLeave={e => e.currentTarget.style.borderColor = '#2a2a3a'}
             >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
                 <line x1="3" y1="6" x2="21" y2="6"/>
                 <path d="M16 10a4 4 0 01-8 0"/>

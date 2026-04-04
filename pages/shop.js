@@ -30,7 +30,7 @@ export default function Shop() {
           <h1 className="section-title">
             {selectedCategory || 'Todos los Productos'}
           </h1>
-          <p style={{ color: '#555566', marginTop: '1.5rem', fontSize: '0.85rem' }}>
+          <p style={{ color: '#555566', marginTop: '1.5rem', fontSize: '1rem' }}>
             {filtered.length} producto{filtered.length !== 1 ? 's' : ''} encontrado{filtered.length !== 1 ? 's' : ''}
           </p>
         </div>
@@ -59,7 +59,7 @@ export default function Shop() {
               style={{
                 background: '#16161f', color: '#f5f0ee',
                 border: '1px solid #2a2a3a', borderRadius: 4,
-                padding: '0.5rem 1rem', fontSize: '0.78rem',
+                padding: '0.5rem 1rem', fontSize: '0.92rem',
                 fontFamily: "'Montserrat', sans-serif",
                 cursor: 'pointer',
               }}
@@ -102,7 +102,7 @@ function filterBtnStyle(active) {
     fontWeight: 500,
     cursor: 'pointer',
     fontFamily: "'Montserrat', sans-serif",
-    fontSize: '0.78rem',
+    fontSize: '0.92rem',
     letterSpacing: '0.06em',
     transition: 'all 0.2s',
   };

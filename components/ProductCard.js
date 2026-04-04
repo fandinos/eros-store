@@ -76,7 +76,7 @@ export default function ProductCard({ product }) {
       {/* Info */}
       <div style={{ padding: '1.1rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
         <span style={{
-          fontSize: '0.65rem', color: '#c8385a', fontWeight: 600,
+          fontSize: '0.85rem', color: '#c8385a', fontWeight: 600,
           textTransform: 'uppercase', letterSpacing: '0.12em',
         }}>
           {product.category}
@@ -85,7 +85,7 @@ export default function ProductCard({ product }) {
         <Link href={`/product/${product.id}`}>
           <h3 style={{
             fontFamily: "'Cormorant Garamond', serif",
-            fontSize: '1.05rem', fontWeight: 400,
+            fontSize: '1.2rem', fontWeight: 400,
             color: '#f5f0ee', lineHeight: 1.3,
             transition: 'color 0.2s',
           }}
@@ -94,7 +94,7 @@ export default function ProductCard({ product }) {
           >{product.name}</h3>
         </Link>
 
-        <p style={{ fontSize: '0.78rem', color: '#555566', lineHeight: 1.55, flex: 1 }}>
+        <p style={{ fontSize: '0.92rem', color: '#555566', lineHeight: 1.55, flex: 1 }}>
           {product.description.slice(0, 75)}...
         </p>
 
@@ -105,7 +105,7 @@ export default function ProductCard({ product }) {
         }}>
           <span style={{
             fontFamily: "'Cormorant Garamond', serif",
-            fontSize: '1.3rem', fontWeight: 400, color: '#c9a84c',
+            fontSize: '1.5rem', fontWeight: 400, color: '#c9a84c',
           }}>
             {formatPrice(product.price)}
           </span>

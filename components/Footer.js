@@ -76,7 +76,7 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <div style={{ marginBottom: '1rem' }}>
-              <img src="/logo.png" alt="All Yours" style={{ height: 48, width: 'auto', objectFit: 'contain' }} />
+              <img src="/logo.png" alt="All Yours" style={{ height: 190, width: 'auto', objectFit: 'contain' }} />
             </div>
             <p style={{ color: '#555566', fontSize: '0.82rem', lineHeight: 1.7 }}>
               Tu tienda íntima de confianza. Discreción total, envíos rápidos en toda Colombia.

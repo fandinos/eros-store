@@ -182,10 +182,10 @@ export default function Home() {
                       <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>{cfg.emoji}</div>
                       <h3 style={{
                         fontFamily: "'Cormorant Garamond', serif",
-                        fontSize: '1.1rem', fontWeight: 400, color: '#f5f0ee',
+                        fontSize: '1.25rem', fontWeight: 400, color: '#f5f0ee',
                         marginBottom: '0.5rem',
                       }}>{cat}</h3>
-                      <p style={{ fontSize: '0.78rem', color: '#555566' }}>{cfg.desc}</p>
+                      <p style={{ fontSize: '0.92rem', color: '#555566' }}>{cfg.desc}</p>
                       <div style={{
                         width: 30, height: 1, background: cfg.color,
                         margin: '1rem auto 0',
