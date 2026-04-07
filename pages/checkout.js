@@ -9,7 +9,7 @@ export default function Checkout() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const shipping = totalPrice >= 150000 ? 0 : 15000;
+  const shipping = totalPrice >= 100000 ? 0 : 12000;
   const orderTotal = totalPrice + shipping;
 
   const handleCheckout = async () => {

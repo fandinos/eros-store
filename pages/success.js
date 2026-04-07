@@ -5,7 +5,9 @@ import { useCart } from '../lib/CartContext';
 
 export default function Success() {
   const { clearCart } = useCart();
-  useEffect(() => { clearCart(); }, []);
+  useEffect(() => {
+    clearCart();
+  }, []); // eslint-disable-line
 
   return (
     <main style={{ padding: '6rem 0', textAlign: 'center', minHeight: '70vh' }}>

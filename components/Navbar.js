@@ -34,11 +34,11 @@ export default function Navbar() {
         {/* Top bar */}
         <div style={{
           background: '#c8385a', textAlign: 'center',
-          padding: '0.4rem 1rem', fontSize: '0.95rem',
+          padding: '0.4rem 1rem', fontSize: '0.8rem',
           fontWeight: 600, letterSpacing: '0.08em',
           textTransform: 'uppercase', color: 'white',
         }}>
-          🚚 Envío Rápido y Discreto · Empaque 100% Confidencial
+          🎁 ENVÍO GRATIS EN COMPRAS MAYORES A $100.000 · 🚚 Empaque 100% Discreto
         </div>
  
         <div style={{

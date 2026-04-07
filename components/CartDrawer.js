@@ -5,7 +5,7 @@ import { formatPrice } from '../lib/products';
 
 export default function CartDrawer({ isOpen, onClose }) {
   const { items, removeItem, updateQty, totalPrice } = useCart();
-  const shipping = totalPrice >= 15000 ? 0 : 599;
+  const shipping = totalPrice >= 100000 ? 0 : 12000;
   const total = totalPrice + shipping;
 
   return (

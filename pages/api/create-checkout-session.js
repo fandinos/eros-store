@@ -17,7 +17,7 @@ export default async function handler(req, res) {
 
   // Calculate total
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const shipping = subtotal >= 150000 ? 0 : 15000;
+  const shipping = subtotal >= 100000 ? 0 : 12000;
   const totalCOP = subtotal + shipping;
   const amountInCentavos = totalCOP * 100;
 
