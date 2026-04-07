@@ -32,10 +32,10 @@ export default function Checkout() {
         'reference': data.reference,
         'signature:integrity': data.signature,
         'redirect-url': data.redirectUrl,
-        'customer-data:email-address-hint': '',
         'tax-in-cents:vat': Math.round(data.amountInCentavos * 0.19),
       });
 
+      localStorage.removeItem('toystore-cart');
       window.location.href = `https://checkout.wompi.co/p/?${params.toString()}`;
     } catch (err) {
       setError(err.message);

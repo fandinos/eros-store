@@ -57,7 +57,6 @@ export default function ProductCard({ product }) {
               filter: 'brightness(0.85)',
             }}
           />
-          {/* Gradient overlay */}
           <div style={{
             position: 'absolute', inset: 0,
             background: 'linear-gradient(to top, rgba(10,10,10,0.6) 0%, transparent 50%)',
@@ -74,10 +73,10 @@ export default function ProductCard({ product }) {
       </Link>
 
       {/* Info */}
-      <div style={{ padding: '1.1rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+      <div style={{ padding: '1rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
         <span style={{
-          fontSize: '0.85rem', color: '#c8385a', fontWeight: 600,
-          textTransform: 'uppercase', letterSpacing: '0.12em',
+          fontSize: '0.75rem', color: '#c8385a', fontWeight: 600,
+          textTransform: 'uppercase', letterSpacing: '0.1em',
         }}>
           {product.category}
         </span>
@@ -85,7 +84,7 @@ export default function ProductCard({ product }) {
         <Link href={`/product/${product.id}`}>
           <h3 style={{
             fontFamily: "'Cormorant Garamond', serif",
-            fontSize: '1.2rem', fontWeight: 400,
+            fontSize: '1.1rem', fontWeight: 400,
             color: '#f5f0ee', lineHeight: 1.3,
             transition: 'color 0.2s',
           }}
@@ -94,18 +93,20 @@ export default function ProductCard({ product }) {
           >{product.name}</h3>
         </Link>
 
-        <p style={{ fontSize: '0.92rem', color: '#555566', lineHeight: 1.55, flex: 1 }}>
+        <p style={{ fontSize: '0.82rem', color: '#555566', lineHeight: 1.5, flex: 1 }}>
           {product.description.slice(0, 75)}...
         </p>
 
         <div style={{
           display: 'flex', justifyContent: 'space-between',
-          alignItems: 'center', marginTop: '0.75rem',
+          alignItems: 'center', marginTop: '0.5rem',
           paddingTop: '0.75rem', borderTop: '1px solid #2a2a3a',
+          gap: '0.5rem',
         }}>
           <span style={{
             fontFamily: "'Cormorant Garamond', serif",
-            fontSize: '1.5rem', fontWeight: 400, color: '#c9a84c',
+            fontSize: '1.2rem', fontWeight: 400, color: '#c9a84c',
+            flexShrink: 0,
           }}>
             {formatPrice(product.price)}
           </span>
@@ -116,13 +117,15 @@ export default function ProductCard({ product }) {
               color: 'white',
               border: 'none',
               borderRadius: 4,
-              padding: '0.45rem 0.9rem',
-              fontSize: '0.72rem',
+              padding: '0.35rem 0.6rem',
+              fontSize: '0.65rem',
               fontWeight: 600,
-              letterSpacing: '0.08em',
+              letterSpacing: '0.06em',
               textTransform: 'uppercase',
               cursor: 'pointer',
               transition: 'background 0.3s',
+              whiteSpace: 'nowrap',
+              flexShrink: 0,
             }}
           >
             {added ? '✓ Agregado' : '+ Carrito'}

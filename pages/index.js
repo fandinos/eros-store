@@ -213,7 +213,7 @@ export default function Home() {
                   alignItems: 'flex-end', marginBottom: '2.5rem',
                   flexWrap: 'wrap', gap: '1rem',
                 }}>
-                  <div>
+                  <div style={{ textAlign: 'left' }}>
                     <p style={{
                       fontSize: '0.68rem', letterSpacing: '0.25em',
                       textTransform: 'uppercase', color: cfg.color,

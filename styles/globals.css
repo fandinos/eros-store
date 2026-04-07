@@ -245,4 +245,23 @@ body::before {
     grid-template-columns: 1fr !important;
   }
 }
+
+/* Fix section titles on mobile */
+@media (max-width: 639px) {
+  .section-title {
+    font-size: clamp(1.6rem, 6vw, 2.2rem) !important;
+    display: block !important;
+    text-align: left !important;
+  }
+
+  .section-title::after {
+    left: 0 !important;
+  }
+
+  /* Fix add to cart button on mobile */
+  .card button {
+    font-size: 0.62rem !important;
+    padding: 0.3rem 0.5rem !important;
+  }
+}
  
