@@ -9,15 +9,12 @@ export default function Checkout() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [widgetReady, setWidgetReady] = useState(false);
-  const [checkoutData, setCheckoutData] = useState(null);
   const formRef = useRef(null);
   const [form, setForm] = useState({
     name: '',
-    email: '',
     phone: '',
-    city: '',
-    region: '',
     address: '',
+    city: '',
     notes: '',
   });
 
@@ -38,7 +35,7 @@ export default function Checkout() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const isValid = form.name && form.email && form.phone && form.city && form.address && form.region;
+  const isValid = form.name && form.phone && form.address && form.city;
 
   const handleCheckout = async () => {
     if (!isValid) {
@@ -71,7 +68,6 @@ export default function Checkout() {
         redirectUrl: data.redirectUrl,
         taxInCents: { vat: Math.round(data.amountInCentavos * 0.19) },
         customerData: {
-          email: form.email,
           fullName: form.name,
           phoneNumber: form.phone,
           phoneNumberPrefix: '+57',
@@ -79,9 +75,9 @@ export default function Checkout() {
         shippingAddress: {
           addressLine1: form.address,
           city: form.city,
-          region: form.region,
           phoneNumber: form.phone,
           country: 'CO',
+          region: form.city, // using city as region fallback
         },
       });
 
@@ -167,7 +163,7 @@ export default function Checkout() {
               </div>
             </div>
 
-            {/* Shipping form */}
+            {/* Shipping form — simplified */}
             <div style={{ background: '#16161f', border: '1px solid #2a2a3a', borderRadius: 12, padding: '1.5rem' }}>
               <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.3rem', fontWeight: 300, marginBottom: '1.25rem', color: '#f5f0ee' }}>
                 📦 Datos de Envío
@@ -175,11 +171,9 @@ export default function Checkout() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
                 {[
                   { label: 'Nombre completo *', name: 'name', type: 'text', placeholder: 'Tu nombre completo' },
-                  { label: 'Correo electrónico *', name: 'email', type: 'email', placeholder: 'tu@email.com' },
-                  { label: 'Teléfono / WhatsApp *', name: 'phone', type: 'tel', placeholder: '3001234567' },
-                  { label: 'Ciudad *', name: 'city', type: 'text', placeholder: 'Bogotá, Medellín, Cali...' },
-                  { label: 'Departamento *', name: 'region', type: 'text', placeholder: 'Cundinamarca, Antioquia...' },
+                  { label: 'Celular / WhatsApp *', name: 'phone', type: 'tel', placeholder: '3001234567' },
                   { label: 'Dirección completa *', name: 'address', type: 'text', placeholder: 'Calle 123 # 45-67, Apto 8' },
+                  { label: 'Ciudad *', name: 'city', type: 'text', placeholder: 'Bogotá, Medellín, Cali...' },
                   { label: 'Notas adicionales (opcional)', name: 'notes', type: 'text', placeholder: 'Instrucciones especiales de entrega' },
                 ].map(field => (
                   <div key={field.name}>
