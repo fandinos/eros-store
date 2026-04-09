@@ -8,35 +8,41 @@ export default function Checkout() {
   const { items, totalPrice } = useCart();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    city: '',
+    address: '',
+    notes: '',
+  });
 
   const shipping = totalPrice >= 100000 ? 0 : 12000;
   const orderTotal = totalPrice + shipping;
 
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const isValid = form.name && form.email && form.phone && form.city && form.address;
+
   const handleCheckout = async () => {
+    if (!isValid) {
+      setError('Por favor completa todos los campos obligatorios.');
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
       const res = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items }),
+        body: JSON.stringify({ items, customerInfo: form }),
       });
       const data = await res.json();
       if (data.error) throw new Error(data.error);
-
-      // Build Wompi checkout URL
-      const params = new URLSearchParams({
-        'public-key': data.publicKey,
-        'currency': 'COP',
-        'amount-in-cents': data.amountInCentavos,
-        'reference': data.reference,
-        'signature:integrity': data.signature,
-        'redirect-url': data.redirectUrl,
-        'tax-in-cents:vat': Math.round(data.amountInCentavos * 0.19),
-      });
-
       localStorage.removeItem('toystore-cart');
-      window.location.href = `https://checkout.wompi.co/p/?${params.toString()}`;
+      window.location.href = `https://checkout.wompi.co/p/?${data.wompiParams}`;
     } catch (err) {
       setError(err.message);
       setLoading(false);
@@ -53,9 +59,7 @@ export default function Checkout() {
           <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '2.5rem', fontWeight: 300, marginBottom: '1.5rem' }}>
             Tu carrito está vacío
           </h1>
-          <Link href="/shop">
-            <button className="btn-primary">Ver Catálogo</button>
-          </Link>
+          <Link href="/shop"><button className="btn-primary">Ver Catálogo</button></Link>
         </div>
       </main>
     );
@@ -72,51 +76,97 @@ export default function Checkout() {
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
-          {/* Order summary */}
-          <div style={{ background: '#16161f', border: '1px solid #2a2a3a', borderRadius: 12, padding: '1.5rem' }}>
-            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.3rem', fontWeight: 300, marginBottom: '1.25rem', color: '#f5f0ee' }}>
-              Productos
-            </h2>
-            {items.map(item => (
-              <div key={item.id} style={{ display: 'flex', gap: '1rem', alignItems: 'center', padding: '0.75rem 0', borderBottom: '1px solid #2a2a3a' }}>
-                <img src={item.image} alt={item.name} style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 8, border: '1px solid #2a2a3a' }} />
-                <div style={{ flex: 1 }}>
-                  <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1rem', color: '#f5f0ee' }}>{item.name}</p>
-                  <p style={{ color: '#555566', fontSize: '0.78rem' }}>Cant: {item.quantity}</p>
-                </div>
-                <span style={{ color: '#c9a84c', fontWeight: 600, fontSize: '0.9rem' }}>
-                  {formatPrice(item.price * item.quantity)}
-                </span>
-              </div>
-            ))}
 
-            <div style={{ marginTop: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', color: '#555566' }}>
-                <span>Subtotal</span><span>{formatPrice(totalPrice)}</span>
+          {/* LEFT — Order summary + shipping form */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+
+            {/* Order items */}
+            <div style={{ background: '#16161f', border: '1px solid #2a2a3a', borderRadius: 12, padding: '1.5rem' }}>
+              <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.3rem', fontWeight: 300, marginBottom: '1.25rem', color: '#f5f0ee' }}>
+                Productos
+              </h2>
+              {items.map(item => (
+                <div key={item.id} style={{ display: 'flex', gap: '1rem', alignItems: 'center', padding: '0.75rem 0', borderBottom: '1px solid #2a2a3a' }}>
+                  <img src={item.image} alt={item.name} style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 8, border: '1px solid #2a2a3a' }} />
+                  <div style={{ flex: 1 }}>
+                    <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1rem', color: '#f5f0ee' }}>{item.name}</p>
+                    <p style={{ color: '#555566', fontSize: '0.78rem' }}>Cant: {item.quantity}</p>
+                  </div>
+                  <span style={{ color: '#c9a84c', fontWeight: 600, fontSize: '0.9rem' }}>
+                    {formatPrice(item.price * item.quantity)}
+                  </span>
+                </div>
+              ))}
+              <div style={{ marginTop: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', color: '#555566' }}>
+                  <span>Subtotal</span><span>{formatPrice(totalPrice)}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', color: '#555566' }}>
+                  <span>Envío</span>
+                  <span style={{ color: shipping === 0 ? '#2a9a7a' : undefined }}>
+                    {shipping === 0 ? 'GRATIS 🎉' : formatPrice(shipping)}
+                  </span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: "'Cormorant Garamond', serif", fontSize: '1.4rem', fontWeight: 300, borderTop: '1px solid #2a2a3a', paddingTop: '0.75rem', marginTop: '0.25rem', color: '#c9a84c' }}>
+                  <span>Total</span><span>{formatPrice(orderTotal)}</span>
+                </div>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', color: '#555566' }}>
-                <span>Envío</span>
-                <span style={{ color: shipping === 0 ? '#2a9a7a' : undefined }}>
-                  {shipping === 0 ? 'GRATIS 🎉' : formatPrice(shipping)}
-                </span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: "'Cormorant Garamond', serif", fontSize: '1.4rem', fontWeight: 300, borderTop: '1px solid #2a2a3a', paddingTop: '0.75rem', marginTop: '0.25rem', color: '#c9a84c' }}>
-                <span>Total</span><span>{formatPrice(orderTotal)}</span>
+            </div>
+
+            {/* Shipping form */}
+            <div style={{ background: '#16161f', border: '1px solid #2a2a3a', borderRadius: 12, padding: '1.5rem' }}>
+              <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.3rem', fontWeight: 300, marginBottom: '1.25rem', color: '#f5f0ee' }}>
+                📦 Datos de Envío
+              </h2>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                {[
+                  { label: 'Nombre completo *', name: 'name', type: 'text', placeholder: 'Tu nombre' },
+                  { label: 'Correo electrónico *', name: 'email', type: 'email', placeholder: 'tu@email.com' },
+                  { label: 'Teléfono / WhatsApp *', name: 'phone', type: 'tel', placeholder: '3001234567' },
+                  { label: 'Ciudad *', name: 'city', type: 'text', placeholder: 'Bogotá, Medellín, Cali...' },
+                  { label: 'Dirección completa *', name: 'address', type: 'text', placeholder: 'Calle 123 # 45-67, Apto 8' },
+                  { label: 'Notas adicionales (opcional)', name: 'notes', type: 'text', placeholder: 'Instrucciones especiales de entrega' },
+                ].map(field => (
+                  <div key={field.name}>
+                    <label style={{ fontSize: '0.72rem', color: '#888899', letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: '0.35rem' }}>
+                      {field.label}
+                    </label>
+                    <input
+                      type={field.type}
+                      name={field.name}
+                      value={form[field.name]}
+                      onChange={handleChange}
+                      placeholder={field.placeholder}
+                      style={{
+                        width: '100%',
+                        background: '#111118',
+                        border: '1px solid #2a2a3a',
+                        borderRadius: 6,
+                        padding: '0.65rem 0.9rem',
+                        color: '#f5f0ee',
+                        fontSize: '0.88rem',
+                        fontFamily: "'Montserrat', sans-serif",
+                        outline: 'none',
+                        transition: 'border-color 0.2s',
+                      }}
+                      onFocus={e => e.target.style.borderColor = '#c8385a'}
+                      onBlur={e => e.target.style.borderColor = '#2a2a3a'}
+                    />
+                  </div>
+                ))}
               </div>
             </div>
           </div>
 
-          {/* Payment */}
-          <div style={{ background: '#16161f', border: '1px solid #2a2a3a', borderRadius: 12, padding: '1.5rem' }}>
+          {/* RIGHT — Payment */}
+          <div style={{ background: '#16161f', border: '1px solid #2a2a3a', borderRadius: 12, padding: '1.5rem', alignSelf: 'start' }}>
             <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.3rem', fontWeight: 300, marginBottom: '0.5rem', color: '#f5f0ee' }}>
               🔒 Pago Seguro
             </h2>
             <p style={{ color: '#555566', fontSize: '0.83rem', marginBottom: '1.5rem', lineHeight: 1.6 }}>
-              Serás redirigido a Wompi, la pasarela de pagos de Bancolombia.
-              100% seguro y confiable.
+              Serás redirigido a Wompi, la pasarela de pagos de Bancolombia. 100% seguro y confiable.
             </p>
 
-            {/* Payment methods */}
             <div style={{ background: '#111118', borderRadius: 8, padding: '1rem', border: '1px solid #2a2a3a', marginBottom: '1.5rem' }}>
               <p style={{ fontSize: '0.7rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#555566', marginBottom: '0.75rem' }}>
                 Métodos de pago aceptados
@@ -148,16 +198,23 @@ export default function Checkout() {
             <button
               className="btn-primary"
               onClick={handleCheckout}
-              disabled={loading}
-              style={{ width: '100%', justifyContent: 'center', padding: '1rem', fontSize: '0.85rem', opacity: loading ? 0.7 : 1 }}
+              disabled={loading || !isValid}
+              style={{
+                width: '100%', justifyContent: 'center', padding: '1rem', fontSize: '0.85rem',
+                opacity: loading || !isValid ? 0.6 : 1,
+              }}
             >
               {loading ? '⏳ Redirigiendo...' : `Pagar ${formatPrice(orderTotal)}`}
             </button>
 
+            {!isValid && (
+              <p style={{ textAlign: 'center', fontSize: '0.72rem', color: '#555566', marginTop: '0.5rem' }}>
+                Completa los datos de envío para continuar
+              </p>
+            )}
+
             <div style={{ textAlign: 'center', marginTop: '1rem' }}>
-              <Link href="/shop" style={{ color: '#555566', fontSize: '0.8rem' }}>
-                ← Seguir comprando
-              </Link>
+              <Link href="/shop" style={{ color: '#555566', fontSize: '0.8rem' }}>← Seguir comprando</Link>
             </div>
           </div>
         </div>
