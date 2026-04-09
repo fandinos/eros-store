@@ -26,53 +26,12 @@ export default async function handler(req, res) {
   const signatureString = `${reference}${amountInCentavos}${currency}${integritySecret}`;
   const signature = crypto.createHash('sha256').update(signatureString).digest('hex');
 
-  // Build Wompi params with customer info pre-filled
-  const params = new URLSearchParams({
-    'public-key': publicKey,
-    'currency': currency,
-    'amount-in-cents': amountInCentavos,
-    'reference': reference,
-    'signature:integrity': signature,
-    'redirect-url': `${siteUrl}/success`,
-    'tax-in-cents:vat': Math.round(amountInCentavos * 0.19),
+  res.status(200).json({
+    publicKey,
+    amountInCentavos,
+    reference,
+    signature,
+    redirectUrl: `${siteUrl}/success`,
+    currency,
   });
-
-  if (customerInfo) {
-    if (customerInfo.email) params.set('customer-data:email-address-hint', customerInfo.email);
-    if (customerInfo.phone) params.set('customer-data:phone-number-hint', customerInfo.phone);
-    if (customerInfo.name) params.set('customer-data:full-name-hint', customerInfo.name);
-  }
-
-  // Send WhatsApp notification to yourself via wa.me link stored in order
-  // We'll notify via email summary in the reference
-  try {
-    const orderSummary = items.map(i => `${i.quantity}x ${i.name}`).join(', ');
-    const notifyMessage = encodeURIComponent(
-      `🛍 NUEVO PEDIDO - All Yours\n\n` +
-      `👤 Cliente: ${customerInfo?.name}\n` +
-      `📱 Tel: ${customerInfo?.phone}\n` +
-      `📧 Email: ${customerInfo?.email}\n` +
-      `📍 Ciudad: ${customerInfo?.city}\n` +
-      `🏠 Dirección: ${customerInfo?.address}\n` +
-      `📝 Notas: ${customerInfo?.notes || 'Ninguna'}\n\n` +
-      `🛒 Productos: ${orderSummary}\n` +
-      `💰 Total: $${totalCOP.toLocaleString('es-CO')} COP\n` +
-      `🔖 Referencia: ${reference}`
-    );
-
-    // Store order info to display on success page
-    res.status(200).json({
-      wompiParams: params.toString(),
-      orderInfo: {
-        reference,
-        customer: customerInfo,
-        items: items.map(i => ({ name: i.name, qty: i.quantity, price: i.price })),
-        total: totalCOP,
-        notifyMessage,
-      }
-    });
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: error.message });
-  }
 }

@@ -1,18 +1,22 @@
 // pages/checkout.js
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useCart } from '../lib/CartContext';
 import { formatPrice } from '../lib/products';
 
 export default function Checkout() {
-  const { items, totalPrice } = useCart();
+  const { items, totalPrice, clearCart } = useCart();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [widgetReady, setWidgetReady] = useState(false);
+  const [checkoutData, setCheckoutData] = useState(null);
+  const formRef = useRef(null);
   const [form, setForm] = useState({
     name: '',
     email: '',
     phone: '',
     city: '',
+    region: '',
     address: '',
     notes: '',
   });
@@ -20,19 +24,34 @@ export default function Checkout() {
   const shipping = totalPrice >= 100000 ? 0 : 12000;
   const orderTotal = totalPrice + shipping;
 
+  // Load Wompi widget script
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://checkout.wompi.co/widget.js';
+    script.type = 'text/javascript';
+    script.onload = () => setWidgetReady(true);
+    document.head.appendChild(script);
+    return () => document.head.removeChild(script);
+  }, []);
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const isValid = form.name && form.email && form.phone && form.city && form.address;
+  const isValid = form.name && form.email && form.phone && form.city && form.address && form.region;
 
   const handleCheckout = async () => {
     if (!isValid) {
       setError('Por favor completa todos los campos obligatorios.');
       return;
     }
+    if (!widgetReady) {
+      setError('El widget de pago aún está cargando, intenta de nuevo.');
+      return;
+    }
     setLoading(true);
     setError(null);
+
     try {
       const res = await fetch('/api/create-checkout-session', {
         method: 'POST',
@@ -41,8 +60,43 @@ export default function Checkout() {
       });
       const data = await res.json();
       if (data.error) throw new Error(data.error);
-      localStorage.removeItem('toystore-cart');
-      window.location.href = `https://checkout.wompi.co/p/?${data.wompiParams}`;
+
+      // Open Wompi widget
+      const checkout = new window.WidgetCheckout({
+        currency: 'COP',
+        amountInCents: data.amountInCentavos,
+        reference: data.reference,
+        publicKey: data.publicKey,
+        signature: { integrity: data.signature },
+        redirectUrl: data.redirectUrl,
+        taxInCents: { vat: Math.round(data.amountInCentavos * 0.19) },
+        customerData: {
+          email: form.email,
+          fullName: form.name,
+          phoneNumber: form.phone,
+          phoneNumberPrefix: '+57',
+        },
+        shippingAddress: {
+          addressLine1: form.address,
+          city: form.city,
+          region: form.region,
+          phoneNumber: form.phone,
+          country: 'CO',
+        },
+      });
+
+      checkout.open(function(result) {
+        const transaction = result.transaction;
+        if (transaction && transaction.status === 'APPROVED') {
+          localStorage.removeItem('toystore-cart');
+          clearCart();
+          window.location.href = '/success';
+        } else {
+          setError('El pago no fue aprobado. Por favor intenta de nuevo.');
+          setLoading(false);
+        }
+      });
+
     } catch (err) {
       setError(err.message);
       setLoading(false);
@@ -77,7 +131,7 @@ export default function Checkout() {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
 
-          {/* LEFT — Order summary + shipping form */}
+          {/* LEFT — Order summary + form */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
 
             {/* Order items */}
@@ -120,10 +174,11 @@ export default function Checkout() {
               </h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
                 {[
-                  { label: 'Nombre completo *', name: 'name', type: 'text', placeholder: 'Tu nombre' },
+                  { label: 'Nombre completo *', name: 'name', type: 'text', placeholder: 'Tu nombre completo' },
                   { label: 'Correo electrónico *', name: 'email', type: 'email', placeholder: 'tu@email.com' },
                   { label: 'Teléfono / WhatsApp *', name: 'phone', type: 'tel', placeholder: '3001234567' },
                   { label: 'Ciudad *', name: 'city', type: 'text', placeholder: 'Bogotá, Medellín, Cali...' },
+                  { label: 'Departamento *', name: 'region', type: 'text', placeholder: 'Cundinamarca, Antioquia...' },
                   { label: 'Dirección completa *', name: 'address', type: 'text', placeholder: 'Calle 123 # 45-67, Apto 8' },
                   { label: 'Notas adicionales (opcional)', name: 'notes', type: 'text', placeholder: 'Instrucciones especiales de entrega' },
                 ].map(field => (
@@ -164,7 +219,7 @@ export default function Checkout() {
               🔒 Pago Seguro
             </h2>
             <p style={{ color: '#555566', fontSize: '0.83rem', marginBottom: '1.5rem', lineHeight: 1.6 }}>
-              Serás redirigido a Wompi, la pasarela de pagos de Bancolombia. 100% seguro y confiable.
+              El pago se completa aquí mismo en nuestra página a través de Wompi, la pasarela de Bancolombia. No saldrás de nuestro sitio.
             </p>
 
             <div style={{ background: '#111118', borderRadius: 8, padding: '1rem', border: '1px solid #2a2a3a', marginBottom: '1.5rem' }}>
@@ -204,7 +259,7 @@ export default function Checkout() {
                 opacity: loading || !isValid ? 0.6 : 1,
               }}
             >
-              {loading ? '⏳ Redirigiendo...' : `Pagar ${formatPrice(orderTotal)}`}
+              {loading ? '⏳ Abriendo pago...' : `Pagar ${formatPrice(orderTotal)}`}
             </button>
 
             {!isValid && (
