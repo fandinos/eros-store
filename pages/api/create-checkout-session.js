@@ -58,7 +58,7 @@ export default async function handler(req, res) {
         notes: customerInfo?.notes || '',
         items: orderSummary,
         total: totalCOP,
-        status: 'pendiente',
+        status: req.body.paymentMethod === 'contra_entrega' ? 'contra_entrega' : 'pendiente',
       })
       .select();
 
