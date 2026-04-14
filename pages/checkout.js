@@ -76,7 +76,9 @@ export default function Checkout() {
           `💰 *Total:* $${total.toLocaleString('es-CO')} COP\n` +
           `🔖 *Referencia:* ${data.reference}`
         );
-        window.location.href = `/success?method=contra_entrega&msg=${msg}`;
+
+        // Open WhatsApp immediately — no success page
+        window.location.href = `https://wa.me/573112494003?text=${msg}`;
       } catch (err) {
         setError(err.message);
         setLoading(false);
